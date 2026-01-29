@@ -91,3 +91,24 @@ echo "        ├── .dumpthings.yaml"
 echo "        └── penguin_records/"
 echo "            └── curated/"
 echo "                └── .dumpthings.yaml"
+
+
+# Setup environment with micromamba
+ENV_NAME="penguins-complete"
+
+echo "Setting up environment with micromamba..."
+
+# Only create the environment if it doesn't exist
+if micromamba env list | grep -qE "^[[:space:]]+$ENV_NAME"; then
+    echo "⚠️  Warning: Environment '$ENV_NAME' already exists. Skipping environment creation."
+else
+    echo "Creating '$ENV_NAME' environment with Python and Node.js..."
+    micromamba create -y -n "$ENV_NAME" python nodejs
+
+    # Install dump-things-service package from PyPI
+    echo "Installing dump-things-service package from PyPI..."
+    micromamba run -n "$ENV_NAME" pip install dump-things-service
+fi
+
+echo ""
+echo "✅ Environment setup complete!"
