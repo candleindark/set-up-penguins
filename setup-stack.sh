@@ -8,7 +8,13 @@ set -e  # Exit on any error
 # Define the base directory for the stack
 STACK_DIR="stack"
 
-# Create the stack directory if it doesn't exist
+# Remove existing stack directory if it exists (allows easy re-runs)
+if [ -d "$STACK_DIR" ]; then
+    echo "Removing existing stack directory..."
+    rm -rf "$STACK_DIR"
+fi
+
+# Create the stack directory
 echo "Creating stack directory..."
 mkdir -p "$STACK_DIR"
 
