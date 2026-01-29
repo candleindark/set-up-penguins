@@ -18,6 +18,27 @@ fi
 echo "Creating stack directory..."
 mkdir -p "$STACK_DIR"
 
+# ============================================
+# BACKEND SETUP
+# ============================================
+
+# Setup backend environment with micromamba (Python)
+BACKEND_ENV_NAME="penguins-backend"
+
+echo ""
+echo "Setting up backend environment with micromamba..."
+
+if micromamba env list | grep -qE "^[[:space:]]+$BACKEND_ENV_NAME"; then
+    echo "⚠️  Warning: Environment '$BACKEND_ENV_NAME' already exists. Skipping environment creation."
+else
+    echo "Creating '$BACKEND_ENV_NAME' environment with Python..."
+    micromamba create -y -n "$BACKEND_ENV_NAME" python
+
+    # Install dump-things-service package from PyPI
+    echo "Installing dump-things-service package from PyPI..."
+    micromamba run -n "$BACKEND_ENV_NAME" pip install dump-things-service
+fi
+
 # Define the backend service directory
 BACKEND_DIR="$STACK_DIR/dump-penguins-service"
 
@@ -81,7 +102,7 @@ idfx: digest-md5
 EOF
 
 echo ""
-echo "✅ Backend directory structure created successfully!"
+echo "✅ Backend setup complete!"
 echo ""
 echo "Directory structure:"
 echo "$STACK_DIR/"
@@ -92,23 +113,22 @@ echo "        └── penguin_records/"
 echo "            └── curated/"
 echo "                └── .dumpthings.yaml"
 
+# ============================================
+# FRONTEND SETUP
+# ============================================
 
-# Setup environment with micromamba
-ENV_NAME="penguins-complete"
+# Setup frontend environment with micromamba (Node.js)
+FRONTEND_ENV_NAME="penguins-frontend"
 
-echo "Setting up environment with micromamba..."
+echo ""
+echo "Setting up frontend environment with micromamba..."
 
-# Only create the environment if it doesn't exist
-if micromamba env list | grep -qE "^[[:space:]]+$ENV_NAME"; then
-    echo "⚠️  Warning: Environment '$ENV_NAME' already exists. Skipping environment creation."
+if micromamba env list | grep -qE "^[[:space:]]+$FRONTEND_ENV_NAME"; then
+    echo "⚠️  Warning: Environment '$FRONTEND_ENV_NAME' already exists. Skipping environment creation."
 else
-    echo "Creating '$ENV_NAME' environment with Python and Node.js..."
-    micromamba create -y -n "$ENV_NAME" python nodejs
-
-    # Install dump-things-service package from PyPI
-    echo "Installing dump-things-service package from PyPI..."
-    micromamba run -n "$ENV_NAME" pip install dump-things-service
+    echo "Creating '$FRONTEND_ENV_NAME' environment with Node.js..."
+    micromamba create -y -n "$FRONTEND_ENV_NAME" nodejs
 fi
 
 echo ""
-echo "✅ Environment setup complete!"
+echo "✅ Frontend setup complete!"
