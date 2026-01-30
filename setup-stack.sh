@@ -7,6 +7,7 @@ set -e  # Exit on any error
 
 FRONTEND_PORT="8000"
 BACKEND_PORT="8111"
+HOST=localhost
 
 # Define the base directory for the stack
 STACK_DIR="stack"
@@ -152,7 +153,7 @@ micromamba run -n "$FRONTEND_ENV_NAME" make -C "$FRONTEND_DIR" build
 # Modify config.json to point to local backend
 echo ""
 echo "Configuring frontend to use local backend..."
-jq ".service_base_url[0].url = \"http://0.0.0.0:${BACKEND_PORT}/penguins/\"" "$FRONTEND_DIR/dist/config.json" > "$FRONTEND_DIR/dist/config.json.tmp" && mv "$FRONTEND_DIR/dist/config.json.tmp" "$FRONTEND_DIR/dist/config.json"
+jq ".service_base_url[0].url = \"http://${HOST}:${BACKEND_PORT}/penguins/\"" "$FRONTEND_DIR/dist/config.json" > "$FRONTEND_DIR/dist/config.json.tmp" && mv "$FRONTEND_DIR/dist/config.json.tmp" "$FRONTEND_DIR/dist/config.json"
 
 echo ""
 echo "✅ Frontend setup complete!"
@@ -172,13 +173,13 @@ echo ""
 echo "To start the services, run the following commands:"
 echo ""
 echo "Start backend service (port $BACKEND_PORT):"
-echo "  micromamba run -n $BACKEND_ENV_NAME dump-things-service --origins \"http://localhost:${FRONTEND_PORT}\" --port $BACKEND_PORT \"$BACKEND_STORE_DIR\""
+echo "  micromamba run -n $BACKEND_ENV_NAME dump-things-service --origins \"http://${HOST}:${FRONTEND_PORT}\" --host $HOST --port $BACKEND_PORT \"$BACKEND_STORE_DIR\""
 echo ""
 echo "Start frontend service (port $FRONTEND_PORT):"
-echo "  micromamba run -n $FRONTEND_ENV_NAME python -m http.server -d \"$FRONTEND_DIST_DIR\" $FRONTEND_PORT"
+echo "  micromamba run -n $FRONTEND_ENV_NAME python -m http.server -b ${HOST} -d \"$FRONTEND_DIST_DIR\" $FRONTEND_PORT"
 echo ""
 echo "Once running:"
-echo "  Backend at: http://0.0.0.0:$BACKEND_PORT"
-echo "  Frontend at: http://localhost:$FRONTEND_PORT"
+echo "  Backend at: http://${HOST}:$BACKEND_PORT"
+echo "  Frontend at: http://${HOST}:$FRONTEND_PORT"
 echo ""
 echo "To stop the services gracefully, press Ctrl+C in each terminal."
