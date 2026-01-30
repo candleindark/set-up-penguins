@@ -170,7 +170,7 @@ echo "Starting services..."
 BACKEND_STORE_DIR="$(pwd)/$BACKEND_DIR/store"
 echo ""
 echo "Starting backend service on port $BACKEND_PORT..."
-micromamba run -n "$BACKEND_ENV_NAME" dump-things-service --origins "http://localhost:${FRONTEND_PORT}" "$BACKEND_STORE_DIR" &
+micromamba run -n "$BACKEND_ENV_NAME" dump-things-service --origins "http://localhost:${FRONTEND_PORT}" --port $BACKEND_PORT "$BACKEND_STORE_DIR" &
 BACKEND_PID=$!
 echo "Backend started with PID: $BACKEND_PID"
 
