@@ -164,6 +164,7 @@ echo "Built app available in: $FRONTEND_DIR/dist"
 # ============================================
 
 BACKEND_STORE_DIR="$(pwd)/$BACKEND_DIR/store"
+FRONTEND_DIST_DIR="$(pwd)/$FRONTEND_DIR/dist"
 
 echo ""
 echo "✅ Setup complete!"
@@ -174,7 +175,7 @@ echo "Start backend service (port $BACKEND_PORT):"
 echo "  micromamba run -n $BACKEND_ENV_NAME dump-things-service --origins \"http://localhost:${FRONTEND_PORT}\" --port $BACKEND_PORT \"$BACKEND_STORE_DIR\""
 echo ""
 echo "Start frontend service (port $FRONTEND_PORT):"
-echo "  micromamba run -n $FRONTEND_DEV_ENV_NAME python -m http.server -d \"$FRONTEND_DIR/dist\" $FRONTEND_PORT"
+echo "  micromamba run -n $FRONTEND_DEV_ENV_NAME python -m http.server -d \"$FRONTEND_DIST_DIR\" $FRONTEND_PORT"
 echo ""
 echo "Once running:"
 echo "  Backend at: http://0.0.0.0:$BACKEND_PORT"
