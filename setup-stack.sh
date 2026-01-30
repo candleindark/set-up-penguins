@@ -117,17 +117,17 @@ echo "                └── .dumpthings.yaml"
 # FRONTEND SETUP
 # ============================================
 
-# Setup frontend environment with micromamba (Node.js)
-FRONTEND_ENV_NAME="penguins-frontend"
+# Setup frontend dev environment with micromamba (Node.js)
+FRONTEND_DEV_ENV_NAME="penguins-frontend"
 
 echo ""
-echo "Setting up frontend environment with micromamba..."
+echo "Setting up frontend dev environment with micromamba..."
 
-if micromamba env list | grep -qE "^[[:space:]]+$FRONTEND_ENV_NAME"; then
-    echo "⚠️  Warning: Environment '$FRONTEND_ENV_NAME' already exists. Skipping environment creation."
+if micromamba env list | grep -qE "^[[:space:]]+$FRONTEND_DEV_ENV_NAME"; then
+    echo "⚠️  Warning: Environment '$FRONTEND_DEV_ENV_NAME' already exists. Skipping environment creation."
 else
-    echo "Creating '$FRONTEND_ENV_NAME' environment with Node.js..."
-    micromamba create -y -n "$FRONTEND_ENV_NAME" nodejs
+    echo "Creating '$FRONTEND_DEV_ENV_NAME' environment with Node.js..."
+    micromamba create -y -n "$FRONTEND_DEV_ENV_NAME" nodejs
 fi
 
 # Clone the frontend repository
@@ -140,11 +140,11 @@ git clone --recurse-submodules https://hub.datalad.org/edu/penguins.edu.datalad.
 # Build the frontend app using Makefile
 echo ""
 echo "Installing frontend dev dependencies..."
-micromamba run -n "$FRONTEND_ENV_NAME" make -C "$FRONTEND_DIR" install
+micromamba run -n "$FRONTEND_DEV_ENV_NAME" make -C "$FRONTEND_DIR" install
 
 echo ""
 echo "Building frontend app..."
-micromamba run -n "$FRONTEND_ENV_NAME" make -C "$FRONTEND_DIR" build
+micromamba run -n "$FRONTEND_DEV_ENV_NAME" make -C "$FRONTEND_DIR" build
 
 echo ""
 echo "✅ Frontend setup complete!"
