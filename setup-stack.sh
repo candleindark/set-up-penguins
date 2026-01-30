@@ -5,6 +5,8 @@
 
 set -e  # Exit on any error
 
+BACKEND_PORT="8111"
+
 # Define the base directory for the stack
 STACK_DIR="stack"
 
@@ -145,6 +147,11 @@ micromamba run -n "$FRONTEND_DEV_ENV_NAME" make -C "$FRONTEND_DIR" install
 echo ""
 echo "Building frontend app..."
 micromamba run -n "$FRONTEND_DEV_ENV_NAME" make -C "$FRONTEND_DIR" build
+
+# Modify config.json to point to local backend
+echo ""
+echo "Configuring frontend to use local backend..."
+jq ".service_base_url[0].url = \"http://0.0.0.0:${BACKEND_PORT}/penguins/\"" "$FRONTEND_DIR/dist/config.json" > "$FRONTEND_DIR/dist/config.json.tmp" && mv "$FRONTEND_DIR/dist/config.json.tmp" "$FRONTEND_DIR/dist/config.json"
 
 echo ""
 echo "✅ Frontend setup complete!"
