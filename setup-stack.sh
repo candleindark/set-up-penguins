@@ -137,6 +137,17 @@ echo ""
 echo "Cloning frontend repository (with submodules)..."
 git clone --recurse-submodules https://hub.datalad.org/edu/penguins.edu.datalad.org-ui.git "$FRONTEND_DIR"
 
+# Build the frontend app using Makefile
 echo ""
+echo "Installing frontend dev dependencies..."
+micromamba run -n "$FRONTEND_ENV_NAME" make -C "$FRONTEND_DIR" install
+
+echo ""
+echo "Building frontend app..."
+micromamba run -n "$FRONTEND_ENV_NAME" make -C "$FRONTEND_DIR" build
+
+echo ""
+echo "✅ Frontend setup complete!"
 echo "Frontend cloned to: $FRONTEND_DIR"
+echo "Built app available in: $FRONTEND_DIR/dist"
 
