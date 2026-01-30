@@ -5,6 +5,7 @@
 
 set -e  # Exit on any error
 
+FRONTEND_PORT="8000"
 BACKEND_PORT="8111"
 
 # Define the base directory for the stack
@@ -158,3 +159,40 @@ echo "✅ Frontend setup complete!"
 echo "Frontend cloned to: $FRONTEND_DIR"
 echo "Built app available in: $FRONTEND_DIR/dist"
 
+# ============================================
+# START SERVICES
+# ============================================
+
+echo ""
+echo "Starting services..."
+
+# Start backend service in the background
+BACKEND_STORE_DIR="$(pwd)/$BACKEND_DIR/store"
+echo ""
+echo "Starting backend service on port $BACKEND_PORT..."
+micromamba run -n "$BACKEND_ENV_NAME" dump-things-service --origins "http://localhost:${FRONTEND_PORT}" "$BACKEND_STORE_DIR" &
+BACKEND_PID=$!
+echo "Backend started with PID: $BACKEND_PID"
+
+# Start frontend service in the background
+echo ""
+echo "Starting frontend service on port $FRONTEND_PORT..."
+micromamba run -n "$FRONTEND_DEV_ENV_NAME" python -m http.server -d "$FRONTEND_DIR/dist" "$FRONTEND_PORT" &
+FRONTEND_PID=$!
+echo "Frontend started with PID: $FRONTEND_PID"
+
+echo ""
+echo "✅ All services started!"
+echo ""
+echo "Backend running at: http://0.0.0.0:$BACKEND_PORT"
+echo "Frontend running at: http://localhost:$FRONTEND_PORT"
+echo ""
+echo "To stop the services gracefully:"
+echo ""
+echo "  Stop backend (PID: $BACKEND_PID):"
+echo "    macOS:  kill -INT $BACKEND_PID"
+echo "    Linux:  kill -SIGINT $BACKEND_PID"
+echo ""
+echo "  Stop frontend (PID: $FRONTEND_PID):"
+echo "    macOS:  kill -INT $FRONTEND_PID"
+echo "    Linux:  kill -SIGINT $FRONTEND_PID"
