@@ -130,5 +130,13 @@ else
     micromamba create -y -n "$FRONTEND_ENV_NAME" nodejs
 fi
 
+# Clone the frontend repository
+FRONTEND_DIR="$STACK_DIR/penguins.edu.datalad.org-ui"
+
 echo ""
-echo "✅ Frontend setup complete!"
+echo "Cloning frontend repository (with submodules)..."
+git clone --recurse-submodules https://hub.datalad.org/edu/penguins.edu.datalad.org-ui.git "$FRONTEND_DIR"
+
+echo ""
+echo "Frontend cloned to: $FRONTEND_DIR"
+
