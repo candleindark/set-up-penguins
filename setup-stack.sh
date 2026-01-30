@@ -120,17 +120,17 @@ echo "                └── .dumpthings.yaml"
 # FRONTEND SETUP
 # ============================================
 
-# Setup frontend dev environment with micromamba (Node.js)
-FRONTEND_DEV_ENV_NAME="penguins-frontend"
+# Setup frontend environment with micromamba (Node.js and Python)
+FRONTEND_ENV_NAME="penguins-frontend"
 
 echo ""
-echo "Setting up frontend dev environment with micromamba..."
+echo "Setting up frontend environment with micromamba..."
 
-if micromamba env list | grep -qE "^[[:space:]]+$FRONTEND_DEV_ENV_NAME"; then
-    echo "⚠️  Warning: Environment '$FRONTEND_DEV_ENV_NAME' already exists. Skipping environment creation."
+if micromamba env list | grep -qE "^[[:space:]]+$FRONTEND_ENV_NAME"; then
+    echo "⚠️  Warning: Environment '$FRONTEND_ENV_NAME' already exists. Skipping environment creation."
 else
-    echo "Creating '$FRONTEND_DEV_ENV_NAME' environment with Node.js..."
-    micromamba create -y -n "$FRONTEND_DEV_ENV_NAME" nodejs
+    echo "Creating '$FRONTEND_ENV_NAME' environment with Node.js and Python..."
+    micromamba create -y -n "$FRONTEND_ENV_NAME" nodejs python
 fi
 
 # Clone the frontend repository
@@ -142,12 +142,12 @@ git clone --recurse-submodules https://hub.datalad.org/edu/penguins.edu.datalad.
 
 # Build the frontend app using Makefile
 echo ""
-echo "Installing frontend dev dependencies..."
-micromamba run -n "$FRONTEND_DEV_ENV_NAME" make -C "$FRONTEND_DIR" install
+echo "Installing frontend dependencies..."
+micromamba run -n "$FRONTEND_ENV_NAME" make -C "$FRONTEND_DIR" install
 
 echo ""
 echo "Building frontend app..."
-micromamba run -n "$FRONTEND_DEV_ENV_NAME" make -C "$FRONTEND_DIR" build
+micromamba run -n "$FRONTEND_ENV_NAME" make -C "$FRONTEND_DIR" build
 
 # Modify config.json to point to local backend
 echo ""
@@ -175,7 +175,7 @@ echo "Start backend service (port $BACKEND_PORT):"
 echo "  micromamba run -n $BACKEND_ENV_NAME dump-things-service --origins \"http://localhost:${FRONTEND_PORT}\" --port $BACKEND_PORT \"$BACKEND_STORE_DIR\""
 echo ""
 echo "Start frontend service (port $FRONTEND_PORT):"
-echo "  micromamba run -n $FRONTEND_DEV_ENV_NAME python -m http.server -d \"$FRONTEND_DIST_DIR\" $FRONTEND_PORT"
+echo "  micromamba run -n $FRONTEND_ENV_NAME python -m http.server -d \"$FRONTEND_DIST_DIR\" $FRONTEND_PORT"
 echo ""
 echo "Once running:"
 echo "  Backend at: http://0.0.0.0:$BACKEND_PORT"
