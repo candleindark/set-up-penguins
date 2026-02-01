@@ -42,7 +42,7 @@ mkdir -p "$BACKEND_DIR/store/penguin_records/curated"
 
 # Create store/.dumpthings.yaml
 echo "Creating store/.dumpthings.yaml..."
-cat > "$BACKEND_DIR/store/.dumpthings.yaml" << 'EOF'
+cat > "$BACKEND_DIR/store/.dumpthings.yaml" << EOF
 type: collections     # has to be "collections"
 version: 1            # has to be 1
 
