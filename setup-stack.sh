@@ -5,12 +5,8 @@
 
 set -e  # Exit on any error
 
-FRONTEND_PORT="8000"
-BACKEND_PORT="8111"
-HOST=localhost
-
-# Define the base directory for the stack
-STACK_DIR="stack"
+# Source shared configuration
+source "$(dirname "$0")/stack-config.sh"
 
 # Remove existing stack directory if it exists (allows easy re-runs)
 if [ -d "$STACK_DIR" ]; then
@@ -26,9 +22,6 @@ mkdir -p "$STACK_DIR"
 # BACKEND SETUP
 # ============================================
 
-# Setup backend environment with micromamba (Python)
-BACKEND_ENV_NAME="penguins-backend"
-
 echo ""
 echo "Setting up backend environment with micromamba..."
 
@@ -42,9 +35,6 @@ else
     echo "Installing dump-things-service package from PyPI..."
     micromamba run -n "$BACKEND_ENV_NAME" pip install dump-things-service
 fi
-
-# Define the backend service directory
-BACKEND_DIR="$STACK_DIR/dump-penguins-service"
 
 # Create the backend directory structure
 echo "Creating dump-penguins-service directory structure..."
@@ -121,9 +111,6 @@ echo "                └── .dumpthings.yaml"
 # FRONTEND SETUP
 # ============================================
 
-# Setup frontend environment with micromamba (Node.js and Python)
-FRONTEND_ENV_NAME="penguins-frontend"
-
 echo ""
 echo "Setting up frontend environment with micromamba..."
 
@@ -135,7 +122,6 @@ else
 fi
 
 # Clone the frontend repository
-FRONTEND_DIR="$STACK_DIR/penguins.edu.datalad.org-ui"
 
 echo ""
 echo "Cloning frontend repository (with submodules)..."
