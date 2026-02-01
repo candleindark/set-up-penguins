@@ -49,7 +49,7 @@ version: 1            # has to be 1
 # All collections are listed in "collections"
 collections:
   penguins:
-    default_token: read_curated_access
+    default_token: $READ_CURATED_TOKEN
     curated: penguin_records/curated
     incoming: penguin_records/incoming
     # backend:  # let this default to record_dir+stl
@@ -60,7 +60,7 @@ collections:
     # ignore_classes:  # Let this default to an empty list
 
 tokens:
-  read_curated_access:
+  $READ_CURATED_TOKEN:
     user_id: anonymous
     collections:
       penguins:
@@ -68,7 +68,7 @@ tokens:
         incoming_label: ""
     # hashed:  # Let it default to false
 
-  read_collection_access:
+  $READ_COLLECTION_TOKEN:
     user_id: collection_reader
     collections:
       penguins:
@@ -76,7 +76,7 @@ tokens:
         incoming_label: user_posted_penguin_records
     # hashed:  # Let it default to false
 
-  full_access:
+  $WRITE_COLLECTION_TOKEN:
     user_id: full_access_user
     collections:
       penguins:
