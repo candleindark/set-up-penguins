@@ -15,9 +15,9 @@ HOST=localhost
 BACKEND_DIR="$STACK_DIR/dump-penguins-service"
 BACKEND_ENV_NAME="penguins-backend"
 BACKEND_PORT=8111
-READ_CURATED_TOKEN="read_curated_access"
-READ_COLLECTION_TOKEN="read_collection_access"
-WRITE_COLLECTION_TOKEN="full_access"
+READ_CURATED_TOKEN=read_curated_token
+READ_COLLECTION_TOKEN=read_collection_token
+WRITE_COLLECTION_TOKEN=write_collection_token
 
 # Frontend configuration
 FRONTEND_DIR="$STACK_DIR/penguins.edu.datalad.org-ui"
