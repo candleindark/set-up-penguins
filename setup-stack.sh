@@ -61,7 +61,7 @@ collections:
 
 tokens:
   $READ_CURATED_TOKEN:
-    user_id: anonymous
+    user_id: read_curated_user
     collections:
       penguins:
         mode: READ_CURATED
@@ -69,7 +69,7 @@ tokens:
     # hashed:  # Let it default to false
 
   $READ_COLLECTION_TOKEN:
-    user_id: collection_reader
+    user_id: read_collection_user
     collections:
       penguins:
         mode: READ_COLLECTION
@@ -77,7 +77,7 @@ tokens:
     # hashed:  # Let it default to false
 
   $WRITE_COLLECTION_TOKEN:
-    user_id: full_access_user
+    user_id: write_collection_user
     collections:
       penguins:
         mode: WRITE_COLLECTION
