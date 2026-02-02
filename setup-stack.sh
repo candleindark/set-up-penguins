@@ -11,6 +11,7 @@ source "$(dirname "$0")/stack-config.sh"
 # Remove existing stack directory if it exists (allows easy re-runs)
 if [ -d "$STACK_DIR" ]; then
     echo "Removing existing stack directory..."
+    chmod -R u+rw "$STACK_DIR"  # Needed to remove annexed files
     rm -rf "$STACK_DIR"
 fi
 
