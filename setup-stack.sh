@@ -6,7 +6,7 @@
 set -e  # Exit on any error
 
 # Source shared configuration
-source "$(dirname "$0")/stack-config.sh"
+source "$(dirname "$0")/config.sh"
 
 # Remove existing stack directory if it exists (allows easy re-runs)
 if [ -d "$STACK_DIR" ]; then

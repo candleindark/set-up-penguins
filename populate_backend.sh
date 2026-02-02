@@ -6,7 +6,7 @@
 set -e  # Exit on any error
 
 # Source shared configuration
-source "$(dirname "$0")/stack-config.sh"
+source "$(dirname "$0")/config.sh"
 
 # ============================================
 # SETUP POPULATE ENVIRONMENT
