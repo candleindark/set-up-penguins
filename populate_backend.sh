@@ -40,9 +40,9 @@ micromamba run -n "$POPULATE_ENV_NAME" pip install -r "$DATASET_DIR/code/require
 
 echo ""
 echo "Populating backend with penguin records..."
-X_DUMPTHINGS_TOKEN="$WRITE_COLLECTION_TOKEN" micromamba run -n "$POPULATE_ENV_NAME" python "$DATASET_DIR/code/convert_penguins.py" \
+(cd "$DATASET_DIR" && X_DUMPTHINGS_TOKEN="$WRITE_COLLECTION_TOKEN" micromamba run -n "$POPULATE_ENV_NAME" python code/convert_penguins.py \
     --post \
-    --url "http://${HOST}:${BACKEND_PORT}/${COLLECTION}/record"
+    --url "http://${HOST}:${BACKEND_PORT}/${COLLECTION}/record")
 
 echo ""
 echo "✅ Backend populated successfully!"
