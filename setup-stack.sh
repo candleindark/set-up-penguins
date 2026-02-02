@@ -48,7 +48,7 @@ version: 1            # has to be 1
 
 # All collections are listed in "collections"
 collections:
-  penguins:
+  $COLLECTION:
     default_token: $READ_CURATED_TOKEN
     curated: penguin_records/curated
     incoming: penguin_records/incoming
@@ -63,7 +63,7 @@ tokens:
   $READ_CURATED_TOKEN:
     user_id: read_curated_user
     collections:
-      penguins:
+      $COLLECTION:
         mode: READ_CURATED
         incoming_label: ""
     # hashed:  # Let it default to false
@@ -71,7 +71,7 @@ tokens:
   $READ_COLLECTION_TOKEN:
     user_id: read_collection_user
     collections:
-      penguins:
+      $COLLECTION:
         mode: READ_COLLECTION
         incoming_label: user_posted_penguin_records
     # hashed:  # Let it default to false
@@ -79,7 +79,7 @@ tokens:
   $WRITE_COLLECTION_TOKEN:
     user_id: write_collection_user
     collections:
-      penguins:
+      $COLLECTION:
         mode: WRITE_COLLECTION
         incoming_label: user_posted_penguin_records
     # hashed:  # Let it default to false
