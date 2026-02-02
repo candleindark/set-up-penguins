@@ -23,3 +23,7 @@ WRITE_COLLECTION_TOKEN=write_collection_token
 FRONTEND_DIR="$STACK_DIR/penguins.edu.datalad.org-ui"
 FRONTEND_ENV_NAME="penguins-frontend"
 FRONTEND_PORT=8000
+
+# Populate backend configuration
+POPULATE_ENV_NAME="penguins-populate"
+
