@@ -31,8 +31,5 @@ datalad install -r -s https://hub.datalad.org/edu/penguins.git "$DATASET_DIR"
 echo "Downloading all data in the dataset..."
 datalad get -r "$DATASET_DIR"
 
-echo ""
-echo "✅ Dataset installed to: $DATASET_DIR"
-
 echo "Installing Python dependencies from dataset..."
 micromamba run -n "$POPULATE_ENV_NAME" pip install -r "$DATASET_DIR/code/requirements.txt"
