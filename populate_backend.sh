@@ -33,3 +33,17 @@ datalad get -r "$DATASET_DIR"
 
 echo "Installing Python dependencies from dataset..."
 micromamba run -n "$POPULATE_ENV_NAME" pip install -r "$DATASET_DIR/code/requirements.txt"
+
+# ============================================
+# POPULATE BACKEND
+# ============================================
+
+echo ""
+echo "Populating backend with penguin records..."
+micromamba run -n "$POPULATE_ENV_NAME" python "$DATASET_DIR/code/convert_penguins.py" \
+    --post \
+    --url "http://${HOST}:${BACKEND_PORT}/${COLLECTION}/record"
+
+echo ""
+echo "✅ Backend populated successfully!"
+
