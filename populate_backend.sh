@@ -25,8 +25,6 @@ fi
 # INSTALL PENGUINS DATASET
 # ============================================
 
-DATASET_DIR="$STACK_DIR/penguins"
-
 echo "Installing penguins dataset with all subdatasets..."
 micromamba run -n "$POPULATE_ENV_NAME" datalad install -r -s https://hub.datalad.org/edu/penguins.git "$DATASET_DIR"
 

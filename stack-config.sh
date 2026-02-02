@@ -25,5 +25,6 @@ FRONTEND_ENV_NAME="penguins-frontend"
 FRONTEND_PORT=8000
 
 # Populate backend configuration
+DATASET_DIR="$STACK_DIR/penguins"
 POPULATE_ENV_NAME="penguins-populate"
 
