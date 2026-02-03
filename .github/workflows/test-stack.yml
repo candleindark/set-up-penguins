@@ -114,3 +114,43 @@ jobs:
             echo "❌ Frontend returned HTTP ${HTTP_STATUS}"
             exit 1
           fi
+
+      # ============================================
+      # STEP 2: POPULATE BACKEND AND TEST
+      # ============================================
+
+      - name: Populate backend
+        run: ./populate_backend.sh
+
+      - name: Test backend population
+        run: |
+          source config.sh
+          BACKEND_URL="http://${HOST}:${BACKEND_PORT}"
+          ENDPOINT="${BACKEND_URL}/${COLLECTION}/records/XYZPerson"
+          
+          echo "Testing population at ${ENDPOINT}"
+          
+          # Test without token - should return empty array
+          echo "Testing without token..."
+          RESPONSE_NO_TOKEN=$(curl -sf "${ENDPOINT}")
+          COUNT_NO_TOKEN=$(echo "${RESPONSE_NO_TOKEN}" | jq 'length')
+          if [ "$COUNT_NO_TOKEN" -eq 0 ]; then
+            echo "✅ Without token: Got empty array as expected"
+          else
+            echo "❌ Without token: Expected 0 elements, got ${COUNT_NO_TOKEN}"
+            exit 1
+          fi
+          
+          # Test with token - should return one or more records
+          echo "Testing with token..."
+          RESPONSE=$(curl -sf -H "X-DumpThings-Token: ${READ_COLLECTION_TOKEN}" "${ENDPOINT}")
+          echo "Response: ${RESPONSE}"
+          
+          COUNT=$(echo "${RESPONSE}" | jq 'length')
+          if [ "$COUNT" -ge 1 ]; then
+            echo "✅ Population successful! Found ${COUNT} XYZPerson record(s)"
+          else
+            echo "❌ Expected 1 or more elements, got ${COUNT}"
+            exit 1
+          fi
+
