@@ -28,9 +28,19 @@ jobs:
         with:
           init-shell: bash
 
-      - name: Install datalad
+      - name: Install DataLad Dependencies
         run: |
-          pip install datalad
+          pip install datalad-installer
+          datalad-installer git-annex -m datalad/packages
+
+      - name: Install DataLad
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y datalad
+          else
+            brew install datalad
+          fi
 
       - name: Run setup-stack.sh
         run: ./setup-stack.sh
