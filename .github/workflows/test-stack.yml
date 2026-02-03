@@ -32,7 +32,11 @@ jobs:
       - name: Install DataLad Dependencies
         run: |
           pip install datalad-installer
-          datalad-installer git-annex -m datalad/packages
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            datalad-installer --sudo ok git-annex -m datalad/packages
+          else
+            datalad-installer git-annex -m datalad/packages
+          fi
 
       - name: Install DataLad
         run: |
