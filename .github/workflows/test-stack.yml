@@ -34,19 +34,8 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-      - name: Install DataLad Dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          pip install datalad-installer
-          datalad-installer --sudo ok git-annex -m datalad/packages
-
-      - name: Install DataLad (Linux)
-        if: runner.os == 'Linux'
-        run: pipx install datalad
-
-      - name: Install DataLad with dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: brew install datalad
+      - name: Install DataLad with its dependencies
+        run: pip install git-annex datalad
 
       - name: Run setup-stack.sh
         run: ./setup-stack.sh
