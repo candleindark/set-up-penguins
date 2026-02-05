@@ -1,0 +1,172 @@
+name: Test Penguins Stack
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * 0'  # Run weekly on Sunday at midnight UTC
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  test-stack:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install micromamba
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          init-shell: bash
+
+      - name: Set git identity
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Install DataLad Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          pip install datalad-installer
+          datalad-installer --sudo ok git-annex -m datalad/packages
+
+      - name: Install DataLad (Linux)
+        if: runner.os == 'Linux'
+        run: pipx install datalad
+
+      - name: Install DataLad with dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install datalad
+
+      - name: Run setup-stack.sh
+        run: ./setup-stack.sh
+
+      - name: Start backend service
+        run: |
+          source config.sh
+          BACKEND_STORE_DIR="$(pwd)/$BACKEND_DIR/store"
+          
+          echo "Starting backend service on port $BACKEND_PORT..."
+          micromamba run -n $BACKEND_ENV_NAME dump-things-service \
+            --origins "http://${HOST}:${FRONTEND_PORT}" \
+            --host $HOST \
+            --port $BACKEND_PORT \
+            "$BACKEND_STORE_DIR" &
+          
+          # Wait for backend to be ready
+          echo "Waiting for backend to start..."
+          for i in {1..30}; do
+            if curl -sf "http://${HOST}:${BACKEND_PORT}/server" > /dev/null 2>&1; then
+              echo "Backend is ready!"
+              break
+            fi
+            echo "Attempt $i: Backend not ready yet, waiting..."
+            sleep 2
+          done
+
+      - name: Start frontend service
+        run: |
+          source config.sh
+          FRONTEND_DIST_DIR="$(pwd)/$FRONTEND_DIR/dist"
+          
+          echo "Starting frontend service on port $FRONTEND_PORT..."
+          micromamba run -n $FRONTEND_ENV_NAME python -m http.server \
+            -b ${HOST} \
+            -d "$FRONTEND_DIST_DIR" \
+            $FRONTEND_PORT &
+          
+          # Wait for frontend to be ready
+          echo "Waiting for frontend to start..."
+          for i in {1..30}; do
+            if curl -sf "http://${HOST}:${FRONTEND_PORT}" > /dev/null 2>&1; then
+              echo "Frontend is ready!"
+              break
+            fi
+            echo "Attempt $i: Frontend not ready yet, waiting..."
+            sleep 2
+          done
+
+      - name: Test backend /server endpoint
+        run: |
+          source config.sh
+          BACKEND_URL="http://${HOST}:${BACKEND_PORT}"
+          
+          echo "Testing backend at ${BACKEND_URL}/server"
+          RESPONSE=$(curl -sf "${BACKEND_URL}/server")
+          echo "Response: ${RESPONSE}"
+          
+          # Check version field exists
+          VERSION=$(echo "${RESPONSE}" | jq -r '.version')
+          if [ -z "$VERSION" ] || [ "$VERSION" == "null" ]; then
+            echo "❌ Missing 'version' field in response"
+            exit 1
+          fi
+          echo "✅ Version: ${VERSION}"
+          
+          echo ""
+          echo "✅ Backend /server endpoint test passed!"
+
+      - name: Test frontend accessibility
+        run: |
+          source config.sh
+          FRONTEND_URL="http://${HOST}:${FRONTEND_PORT}"
+          
+          echo "Testing frontend at ${FRONTEND_URL}"
+          HTTP_STATUS=$(curl -sf -o /dev/null -w "%{http_code}" "${FRONTEND_URL}")
+          
+          if [ "${HTTP_STATUS}" -eq 200 ]; then
+            echo "✅ Frontend is accessible (HTTP ${HTTP_STATUS})"
+          else
+            echo "❌ Frontend returned HTTP ${HTTP_STATUS}"
+            exit 1
+          fi
+
+      # ============================================
+      # STEP 2: POPULATE BACKEND AND TEST
+      # ============================================
+
+      - name: Populate backend
+        run: ./populate_backend.sh
+
+      - name: Test backend population
+        run: |
+          source config.sh
+          BACKEND_URL="http://${HOST}:${BACKEND_PORT}"
+          ENDPOINT="${BACKEND_URL}/${COLLECTION}/records/XYZPerson"
+          
+          echo "Testing population at ${ENDPOINT}"
+          
+          # Test without token - should return empty array
+          echo "Testing without token..."
+          RESPONSE_NO_TOKEN=$(curl -sf "${ENDPOINT}")
+          COUNT_NO_TOKEN=$(echo "${RESPONSE_NO_TOKEN}" | jq 'length')
+          if [ "$COUNT_NO_TOKEN" -eq 0 ]; then
+            echo "✅ Without token: Got empty array as expected"
+          else
+            echo "❌ Without token: Expected 0 elements, got ${COUNT_NO_TOKEN}"
+            exit 1
+          fi
+          
+          # Test with token - should return one or more records
+          echo "Testing with token..."
+          RESPONSE=$(curl -sf -H "X-DumpThings-Token: ${READ_COLLECTION_TOKEN}" "${ENDPOINT}")
+          echo "Response: ${RESPONSE}"
+          
+          COUNT=$(echo "${RESPONSE}" | jq 'length')
+          if [ "$COUNT" -ge 1 ]; then
+            echo "✅ Population successful! Found ${COUNT} XYZPerson record(s)"
+          else
+            echo "❌ Expected 1 or more elements, got ${COUNT}"
+            exit 1
+          fi
+
